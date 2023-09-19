@@ -43,7 +43,10 @@ substep = config['numberOfStepsPerRenderUpdate']
 
 draw_object_in_mesh = False
 gui = ti.ui.Gui(window.get_gui())
-start_step = False
+start_step = True
+ps.memory_allocation_and_initialization()
+solver = ps.build_solver()
+solver.initialize()
 current_fluid_domain_start = [np.array(fluid['start']) for fluid in ps.fluidBlocksConfig]
 current_fluid_domain_end = [np.array(fluid['end']) for fluid in ps.fluidBlocksConfig]
 fluid_box_num = len(current_fluid_domain_start)
@@ -73,12 +76,12 @@ while window.running:
     camera.track_user_inputs(window, movement_speed=0.02, hold_key=ti.ui.RMB)
 
     gui.begin('Widget', 0, 0, 0.15, 1.0)
+    include_rigid_object = gui.checkbox('Include Rigid Object', include_rigid_object)
     if not start_step:
-        if gui.button('Start'):
 
-            ps.memory_allocation_and_initialization()
-            solver = ps.build_solver()
-            solver.initialize()
+        if gui.button('Start'):
+            start_step = True
+
             draw_object_in_mesh = True
         if gui.button('Delete Recent Fluid Block'):
             del ps.fluidBlocksConfig[-1]
@@ -86,7 +89,7 @@ while window.running:
             current_fluid_domain_end = [np.array(fluid['end']) for fluid in ps.fluidBlocksConfig]
             fluid_box_num = len(current_fluid_domain_start)
             reallocate_memory_flag = True
-        include_rigid_object = gui.checkbox('Include Rigid Object', include_rigid_object)
+
         if include_rigid_object != pre_include_rigid_object:
             pre_include_rigid_object = include_rigid_object
             reallocate_memory_flag = True
@@ -129,15 +132,6 @@ while window.running:
             ps.memory_allocation_and_initialization_only_position()
             reallocate_memory_flag = False
 
-        gui.text('----------------------------')
-        gui.text('# of Fluid Particles')
-        gui.text('{}'.format(ps.total_fluid_particle_num))
-        gui.text('# of Rigid Particles')
-        gui.text('{}'.format(ps.total_rigid_particle_num))
-        gui.text('Total # of Particles')
-        gui.text('{}'.format(ps.total_particle_num))
-
-        gui.text('----------------------------')
         output_frames = gui.checkbox('Output in Image', output_frames)
         output_ply = gui.checkbox('Output [.ply] files', output_ply)
         gui.end()
