@@ -115,13 +115,11 @@ class WCSPHSolver(sph_base.SPHBase):
             acc -= self.ps.mass[p_j] * pi * self.cubic_spline_kernel_derivative(x_ij)  # eq (12)
 
         else:
-            sigma = self.ps.rigid_bodies_sigma[self.ps.object_id[p_j]]
-            nu = sigma * self.ps.support_length * self.c_s / (2 * self.ps.density[p_i])  # eq (14)
+
+
             v_ij = self.ps.velocity[p_i] - self.ps.velocity[p_j]
             x_ij = self.ps.position[p_i] - self.ps.position[p_j]
-            pi = -nu * ti.min(v_ij.dot(x_ij), 0.0) / (x_ij.dot(x_ij) + 0.01 * self.ps.support_length ** 2)  # eq (11)
 
-            acc -= self.ps.density0 * self.ps.volume[p_j] * pi * self.cubic_spline_kernel_derivative(x_ij)  # eq (13)
 
     @ti.kernel
     def compute_non_pressure_force(self):
