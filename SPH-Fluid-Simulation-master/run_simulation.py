@@ -52,7 +52,7 @@ safe_boundary_start = ps.domain_start + np.array([ps.padding + ps.particle_radiu
 safe_boundary_end = ps.domain_end - np.array([ps.padding + ps.particle_radius])
 reallocate_memory_flag = False
 object_config = ps.rigidBodiesConfig.copy()
-include_rigid_object = True
+include_rigid_object = False
 pre_include_rigid_object = True
 
 scene_name = 'Dragon Bath'
@@ -73,24 +73,13 @@ while window.running:
     camera.track_user_inputs(window, movement_speed=0.02, hold_key=ti.ui.RMB)
 
     gui.begin('Widget', 0, 0, 0.15, 1.0)
-    gui.text("SPH Particle System")
     if not start_step:
         if gui.button('Start'):
-            start_step = True
+
             ps.memory_allocation_and_initialization()
             solver = ps.build_solver()
             solver.initialize()
             draw_object_in_mesh = True
-        if gui.button('Add Fluid Block'):
-            cur_object_id = ps.cur_obj_id
-            recent_fluid_config = ps.fluidBlocksConfig[-1]
-            new_fluid_config = recent_fluid_config.copy()
-            new_fluid_config['objectId'] = cur_object_id + 1
-            ps.fluidBlocksConfig.append(new_fluid_config)
-            current_fluid_domain_start = [np.array(fluid['start']) for fluid in ps.fluidBlocksConfig]
-            current_fluid_domain_end = [np.array(fluid['end']) for fluid in ps.fluidBlocksConfig]
-            fluid_box_num = len(current_fluid_domain_start)
-            reallocate_memory_flag = True
         if gui.button('Delete Recent Fluid Block'):
             del ps.fluidBlocksConfig[-1]
             current_fluid_domain_start = [np.array(fluid['start']) for fluid in ps.fluidBlocksConfig]
