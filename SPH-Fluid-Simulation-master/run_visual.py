@@ -66,12 +66,12 @@ output_frames = False
 output_interval = config['outputInterval']
 output_ply = True
 cnt = 0
-cnt_ply = 0
+cnt_ply = 1
 series_prefix = "{}_output/particle_object_{}.ply".format(scene_name, "{}")
 enter_second_phase_first_time = True
 reset_scene_flag = False
 
-while cnt<=10000:
+while cnt<5000:
     if start_step:
         for i in range(substep):
             solver.step()
@@ -127,7 +127,14 @@ while cnt<=10000:
                 ps.fluidBlocksConfig[idx]['end'] = current_fluid_domain_end[idx]
             ps.memory_allocation_and_initialization_only_position()
             reallocate_memory_flag = False
+        gui.text('----------------------------')
+        gui.text('# of Fluid Particles')
+        gui.text('{}'.format(ps.total_fluid_particle_num))
+        gui.text('# of Rigid Particles')
+        gui.text('{}'.format(ps.total_rigid_particle_num))
 
+
+        gui.text('----------------------------')
         output_frames = gui.checkbox('Output in Image', output_frames)
         output_ply = gui.checkbox('Output [.ply] files', output_ply)
         gui.end()
@@ -146,6 +153,8 @@ while cnt<=10000:
         solver.viscosity[None] = gui.slider_float('', solver.viscosity[None], 0.001, 0.5)
         gui.text('Surface Tension')
         solver.surface_tension[None] = gui.slider_float('[N/m]', solver.surface_tension[None], 0.001, 5)
+        gui.text('Total # of Particles')
+        gui.text('{}'.format(ps.total_particle_num))
         if solver.viscosity[None] > 0.23 or solver.surface_tension[None] > 2.0:
             # Viscosity with over 0.23 cause numerical instability when time step is larger than 0.0005 typically.
             # Surface tension with over 2.0 cause numerical instability when time step is larger than 0.0005 typically.
